@@ -149,17 +149,22 @@ export async function POST(request: Request) {
       )
       .single();
 
-    if (insertError || !booking) {
-      console.error("Could not save booking:", insertError);
+if (insertError || !booking) {
+  console.error("Could not save booking:", insertError);
 
-      return NextResponse.json(
-        {
-          error: "Could not save booking.",
-          details: insertError?.message ?? "No booking was returned.",
-        },
-        { status: 500 },
-      );
-    }
+  return NextResponse.json(
+    {
+      error: "Could not save booking.",
+      details: {
+        message: insertError?.message ?? "No booking was returned.",
+        code: insertError?.code ?? null,
+        databaseDetails: insertError?.details ?? null,
+        hint: insertError?.hint ?? null,
+      },
+    },
+    { status: 500 },
+  );
+}
 
     const formattedDate = formatBookingDate(booking.booking_date);
     const formattedTime = formatBookingTime(booking.booking_time);
