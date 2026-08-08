@@ -348,18 +348,29 @@ export async function POST(request: Request) {
       },
       { status: 201 },
     );
-  } catch (error) {
-    console.error("Create booking API error:", error);
+} catch (error) {
+  console.error("Booking API error:", error);
 
-    const message =
-      error instanceof Error ? error.message : "Unknown server error.";
+  const errorDetails =
+    error instanceof Error
+      ? {
+          name: error.name,
+          message: error.message,
+          cause:
+            "cause" in error && error.cause
+              ? String(error.cause)
+              : null,
+          stack: error.stack,
+        }
+      : {
+          value: String(error),
+        };
 
-    return NextResponse.json(
-      {
-        error: "Something went wrong while creating the booking.",
-        details: message,
-      },
-      { status: 500 },
-    );
-  }
+  return NextResponse.json(
+    {
+      error: "Could not save booking.",
+      details: errorDetails,
+    },
+    { status: 500 },
+  );
 }
